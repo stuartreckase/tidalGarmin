@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.svg" width="160" alt="tidalGarmin logo"></p>
+
 # tidalGarmin
 
 Unofficial Tidal client for Garmin Fenix 8 Solar 47mm (`fenix8solar47mm`).

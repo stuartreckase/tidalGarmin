@@ -58,8 +58,9 @@ class TidalProvider extends Application.AudioContentProviderApp {
         return new TidalContentDelegate();
     }
 
+    // icon + accent shown for this provider in the native music player
     function getProviderIconInfo() as Media.ProviderIconInfo or Null {
-        return null;
+        return new Media.ProviderIconInfo(Rez.Drawables.LauncherIcon, Graphics.COLOR_BLUE);
     }
 }
 
