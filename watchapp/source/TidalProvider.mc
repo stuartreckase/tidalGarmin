@@ -987,7 +987,9 @@ class Sync {
         };
         log("PI [" + qIdx + "/" + queue.size() + "] " + id);
         Comm.makeWebRequest(
-            TidalAuth.API + "/tracks/" + id + "/playbackinfopostpaywall?audioquality=HIGH&playbackmode=STREAM&assetpresentation=FULL",
+            // immersiveaudio=false: Atmos-capable tracks otherwise come back as
+            // DOLBY_ATMOS eac3, which the watch can't decode (-1005)
+            TidalAuth.API + "/tracks/" + id + "/playbackinfopostpaywall?audioquality=HIGH&playbackmode=STREAM&assetpresentation=FULL&immersiveaudio=false",
             null, options, method(:onPlaybackInfo));
     }
 
@@ -1017,6 +1019,11 @@ class Sync {
         }
         if (manifestJson.find("\"NONE\"") == null) {
             skipFailed("ERR " + id + ": encrypted stream");
+            return;
+        }
+        if (manifestJson.find("mp4a") == null) {
+            // only AAC plays on the watch; don't download ~20 MB to get -1005
+            skipFailed("ERR " + id + ": not AAC");
             return;
         }
         var urls = TidalUtil.manifestUrls(manifestJson);

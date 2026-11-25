@@ -95,6 +95,8 @@ Playback: `Media.ContentIterator` built from stored mappings (never from
 ## Notes / pitfalls
 
 - `LOSSLESS` (FLAC) and `HI_RES` (Widevine) are unusable on the watch; AAC only.
+- Dolby Atmos tracks return E-AC-3 (`eac3`) unless the playback-info request
+  includes `immersiveaudio=false`; E-AC-3 fails on the watch with `-1005`.
 - VM errors (`Unexpected Type Error`, `Failed invoking <symbol>`) bypass
   try/catch. `Media.getContentRefIter().next()` throws them on an empty or
   just-reset cache, so the sync never enumerates the cache.

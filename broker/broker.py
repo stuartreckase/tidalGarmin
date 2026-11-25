@@ -38,7 +38,7 @@ def stream_url_for(track_id, token):
     # LOW/HIGH are the DRM-free AAC flavors; LOSSLESS/HI_RES unusable on Fenix 8
     info = tidal_api(
         f"/tracks/{track_id}/playbackinfopostpaywall",
-        f"audioquality=HIGH&playbackmode=STREAM&assetpresentation=FULL",
+        f"audioquality=HIGH&playbackmode=STREAM&assetpresentation=FULL&immersiveaudio=false",
         token,
     )
     import base64
