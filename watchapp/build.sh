@@ -13,8 +13,19 @@ cd "$(dirname "$0")"
 
 quiet() { grep -v "container access\|container assignment\|Invalid device id"; }
 
+# monkeyc rejects jungle qualifiers for devices whose pack isn't downloaded:
+# compile from a copy that keeps only lines for installed devices
+JUNGLE=.build.jungle
+while IFS= read -r line; do
+    dev="${line%%.resourcePath*}"
+    if [ "$dev" != "$line" ] && [ "$dev" != "base" ] && [ ! -f "$DEVICES/$dev/compiler.json" ]; then
+        continue
+    fi
+    printf '%s\n' "$line"
+done < monkey.jungle > "$JUNGLE"
+
 if [ "$1" == "-e" ]; then
-    "$SDKM/bin/monkeyc" -e -f monkey.jungle -o bin/tidal.iq -y "$KEY" -r -w 2>&1 | quiet
+    "$SDKM/bin/monkeyc" -e -f "$JUNGLE" -o bin/tidal.iq -y "$KEY" -r -w 2>&1 | quiet
     [ ${PIPESTATUS[0]} -ne 0 ] && { echo "EXPORT FAILED"; exit 1; }
     echo "-> bin/tidal.iq"; exit 0
 fi
@@ -24,7 +35,7 @@ if [ "$1" == "-a" ]; then
     ok=0; failed=""; missing=0
     for d in $(sed -n 's/.*<iq:product id="\([^"]*\)".*/\1/p' manifest.xml); do
         if [ ! -f "$DEVICES/$d/compiler.json" ]; then missing=$((missing + 1)); continue; fi
-        if "$SDKM/bin/monkeyc" -d "$d" -f monkey.jungle -o "bin/prg/tidal-$d.prg" -y "$KEY" -O 2 -r >/dev/null 2>&1; then
+        if "$SDKM/bin/monkeyc" -d "$d" -f "$JUNGLE" -o "bin/prg/tidal-$d.prg" -y "$KEY" -O 2 -r >/dev/null 2>&1; then
             ok=$((ok + 1))
         else
             failed="$failed $d"
@@ -38,7 +49,7 @@ RUN=0
 [ "$1" == "-r" ] && { RUN=1; shift; }
 DEV="${1:-fenix8solar47mm}"
 
-"$SDKM/bin/monkeyc" -d "$DEV" -f monkey.jungle -o bin/tidal.prg -y "$KEY" -w -O 2 2>&1 | quiet
+"$SDKM/bin/monkeyc" -d "$DEV" -f "$JUNGLE" -o bin/tidal.prg -y "$KEY" -w -O 2 2>&1 | quiet
 [ ${PIPESTATUS[0]} -ne 0 ] && { echo BUILD FAILED; exit 1; }
 
 if [ $RUN -eq 1 ]; then

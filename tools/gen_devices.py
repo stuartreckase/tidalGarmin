@@ -54,7 +54,7 @@ def write_manifest(devs):
 
 
 def installed(dev_id):
-    # monkeyc rejects jungle qualifiers for devices without a downloaded pack
+    # informational: build.sh filters jungle lines for missing packs itself
     return (CIQ / "Devices" / dev_id / "compiler.json").exists()
 
 
@@ -68,7 +68,7 @@ def write_jungle(devs):
         "# launcher icon per device (Device_Reference 'Launcher Icon Size')",
     ]
     lines += [f"{d['id']}.resourcePath = resources;icons/{d['icon']}"
-              for d in devs if d["icon"] != DEFAULT_ICON and installed(d["id"])]
+              for d in devs if d["icon"] != DEFAULT_ICON]
     (REPO / "watchapp/monkey.jungle").write_text("\n".join(lines) + "\n")
 
 
@@ -118,7 +118,7 @@ def main():
     print(f"{len(devs)} devices; icon sizes {sizes}")
     if missing:
         print(f"{len(missing)} device packs not downloaded (SDK Manager > Devices); "
-              "their icon mapping is skipped until you rerun this after downloading")
+              "build.sh skips their jungle lines until they are")
 
 
 if __name__ == "__main__":
