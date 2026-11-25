@@ -149,3 +149,8 @@ Playback: `Media.ContentIterator` built from stored mappings (never from
 
 Tidal auth flow and client credentials from
 [tiddl](https://github.com/oskvr37/tiddl) (GPLv3).
+
+## License
+
+[GPL-3.0](LICENSE). Tidal and Garmin are trademarks of their respective
+owners; this project is not affiliated with or endorsed by either.
