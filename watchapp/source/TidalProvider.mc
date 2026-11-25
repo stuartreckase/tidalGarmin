@@ -1428,8 +1428,11 @@ class LogView extends WatchUi.View {
             s = "";
         }
         var h = dc.getHeight();
+        var w = dc.getWidth();
+        var font = Graphics.FONT_XTINY;
+        var lineH = dc.getFontHeight(font);
         dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, 30, Graphics.FONT_XTINY, back > 0 ? "LOG -" + back + " (UP/DN)" : "TIDAL LOG (UP/DN)", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(cx, h * 12 / 100, font, back > 0 ? "LOG -" + back + " (UP/DN)" : "TIDAL LOG (UP/DN)", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         if (s.length() == 0) {
             dc.drawText(cx, h / 2, Graphics.FONT_XTINY, "(no output)", Graphics.TEXT_JUSTIFY_CENTER);
@@ -1451,19 +1454,23 @@ class LogView extends WatchUi.View {
             }
         }
         var count = lines.size();
-        var maxShow = 8;
+        // lines that fit between the header and the bottom edge (round-safe band)
+        var maxShow = (h * 64 / 100) / lineH;
+        if (maxShow < 3) { maxShow = 3; }
         if (back > count - maxShow) { back = count > maxShow ? count - maxShow : 0; }
         var skip = count > maxShow ? count - maxShow - back : 0;
         var shown = count > maxShow ? maxShow : count;
-        var y = h / 2 - shown * 22 / 2;
+        var y = h * 56 / 100 - shown * lineH / 2;
         var end = skip + maxShow < count ? skip + maxShow : count;
         for (var i = skip; i < end; i++) {
             var l = lines[i];
-            if (l.length() > 24) {
-                l = l.substring(0, 24);
+            // trim to ~80% of the width (narrower than the round edge mid-screen)
+            var maxW = w * 80 / 100;
+            while (l.length() > 1 && dc.getTextWidthInPixels(l, font) > maxW) {
+                l = l.substring(0, l.length() - 1);
             }
-            dc.drawText(cx, y, Graphics.FONT_XTINY, l, Graphics.TEXT_JUSTIFY_CENTER);
-            y = y + 22;
+            dc.drawText(cx, y, font, l, Graphics.TEXT_JUSTIFY_CENTER);
+            y = y + lineH;
         }
     }
 }
@@ -1695,15 +1702,20 @@ class LoginView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
         dc.clear();
         var cx = dc.getWidth() / 2;
+        var h = dc.getHeight();
+        var small = dc.getFontHeight(Graphics.FONT_XTINY);
+        var big = dc.getFontHeight(Graphics.FONT_LARGE);
+        var codeY = h * 42 / 100;
         dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, 34, Graphics.FONT_XTINY, "TIDAL LOGIN v2", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(cx, h * 13 / 100, Graphics.FONT_XTINY, "TIDAL LOGIN", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, dc.getHeight() / 2 - 20, Graphics.FONT_LARGE, userCode.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(cx, codeY, Graphics.FONT_LARGE, userCode.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, dc.getHeight() / 2 + 35, Graphics.FONT_XTINY, "link.tidal.com", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText(cx, dc.getHeight() / 2 + 55, Graphics.FONT_XTINY, status.toString(), Graphics.TEXT_JUSTIFY_CENTER);
+        var y = codeY + big / 2 + small / 4;
+        dc.drawText(cx, y, Graphics.FONT_XTINY, "link.tidal.com", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(cx, y + small, Graphics.FONT_XTINY, status.toString(), Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, dc.getHeight() - 24, Graphics.FONT_XTINY, "BACK when logged in", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(cx, h * 80 / 100, Graphics.FONT_XTINY, "BACK when logged in", Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     function onBack() as Boolean {

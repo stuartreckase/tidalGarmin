@@ -2,7 +2,4 @@
     <strings>
         <string id="AppName">Tidal</string>
     </strings>
-    <drawables>
-        <bitmap id="LauncherIcon" filename="launcher.png"/>
-    </drawables>
 </resources>
