@@ -1,0 +1,16 @@
+bin/
+*.prg
+broker/login.log
+broker/credentials.json
+.DS_Store
+# secrets / local state — never commit
+.secrets
+secrets
+broker/*.log
+__pycache__/
+*.pyc
+.pi/
+# local agent/research docs — kept out of the repo
+AGENTS.md
+HANDOFF.md
+NOTES.md

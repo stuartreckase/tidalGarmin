@@ -1,0 +1,6 @@
+<resources>
+    <properties>
+        <!-- simulator default; per-device override via properties file on the watch -->
+        <property id="BrokerURL" type="string">http://10.0.0.30:8734</property>
+    </properties>
+</resources>
